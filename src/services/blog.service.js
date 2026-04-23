@@ -1,0 +1,44 @@
+import Blog from "../models/blog.model.js";
+
+export const getAllBlogs = async ({ page, limit, search }) => {
+  const query = search
+    ? { title: { $regex: search, $options: "i" } }
+    : {};
+
+  const total = await Blog.countDocuments(query);
+
+  const blogs = await Blog.find(query)
+    .skip((page - 1) * limit)
+    .limit(limit)
+    .sort({ createdAt: -1 });
+
+  const totalPages = Math.ceil(total / limit);
+
+  return {
+    blogs,
+    pagination: {
+      total,
+      page,
+      page_size: limit,
+      total_pages: totalPages,
+      has_next: page < totalPages,
+      has_previous: page > 1,
+    },
+  };
+};
+
+export const getBlogBySlug = async (slug) => {
+  return await Blog.findOne({ slug });
+};
+
+export const createBlog = async (data) => {
+  return await Blog.create(data);
+};
+
+export const updateBlog = async (id, data) => {
+  return await Blog.findByIdAndUpdate(id, data, { new: true });
+};
+
+export const deleteBlog = async (id) => {
+  return await Blog.findByIdAndDelete(id);
+};
