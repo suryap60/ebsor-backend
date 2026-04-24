@@ -25,8 +25,6 @@ export const getAllContacts = async ({ page, limit, status }) => {
       page,
       page_size: limit,
       total_pages: totalPages,
-      has_next: page < totalPages,
-      has_previous: page > 1,
     },
   };
 };

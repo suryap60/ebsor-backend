@@ -13,11 +13,33 @@ export const getBlogs = async (req, res, next) => {
       search,
     });
 
+    const baseUrl = `${req.protocol}://${req.get("host")}${req.baseUrl}`;
+
+    const currentPage = Number(page);
+    const totalPages = result.pagination.total_pages;
+
+    // build next & previous
+    const next =
+      currentPage < totalPages
+        ? `${baseUrl}?page=${currentPage + 1}&limit=${limit}&search=${search}`
+        : null;
+
+    const previous =
+      currentPage > 1
+        ? `${baseUrl}?page=${currentPage - 1}&limit=${limit}&search=${search}`
+        : null;
+
+    const pagination = {
+      ...result.pagination,
+      next,
+      previous,
+    };
+
     return success(
       res,
       result.blogs,
       "Blogs fetched successfully",
-      result.pagination
+      pagination
     );
   } catch (err) {
     next(err);

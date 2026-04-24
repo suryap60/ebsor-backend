@@ -37,8 +37,6 @@ export const getApplications = async ({ page, limit, status, search }) => {
       page,
       page_size: limit,
       total_pages: totalPages,
-      has_next: page < totalPages,
-      has_previous: page > 1,
     },
   };
 };
@@ -53,4 +51,4 @@ export const updateStatus = async (id, status) => {
     { status },
     { returnDocument: "after" }
   );
-};
+};   

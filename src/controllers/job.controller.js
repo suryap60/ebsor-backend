@@ -16,7 +16,29 @@ export const getJobs = async (req, res, next) => {
       isAdmin,
     });
 
-    return success(res, result.jobs, "Jobs fetched", result.pagination);
+    const baseUrl = `${req.protocol}://${req.get("host")}${req.baseUrl}`;
+
+    const currentPage = Number(page);
+    const totalPages = result.pagination.total_pages;
+
+    // build next & previous
+    const next =
+      currentPage < totalPages
+        ? `${baseUrl}?page=${currentPage + 1}&limit=${limit}&search=${search}`
+        : null;
+
+    const previous =
+      currentPage > 1
+        ? `${baseUrl}?page=${currentPage - 1}&limit=${limit}&search=${search}`
+        : null;
+
+    const pagination = {
+      ...result.pagination,
+      next,
+      previous,
+    };
+
+    return success(res, result.jobs, "Jobs fetched", pagination);
   } catch (err) {
     next(err);
   }

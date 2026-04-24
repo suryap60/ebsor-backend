@@ -23,8 +23,6 @@ export const getAllJobs = async ({ page, limit, search, isAdmin }) => {
       page,
       page_size: limit,
       total_pages: totalPages,
-      has_next: page < totalPages,
-      has_previous: page > 1,
     },
   };
 };

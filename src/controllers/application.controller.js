@@ -35,11 +35,34 @@ export const getApplications = async (req, res, next) => {
       search,
     });
 
+    const baseUrl = `${req.protocol}://${req.get("host")}${req.baseUrl}`;
+
+    const currentPage = Number(page);
+    const totalPages = result.pagination.total_pages;
+
+    // next
+    const next =
+      currentPage < totalPages
+        ? `${baseUrl}?page=${currentPage + 1}&limit=${limit}&status=${status}&search=${search}`
+        : null;
+
+    // previous
+    const previous =
+      currentPage > 1
+        ? `${baseUrl}?page=${currentPage - 1}&limit=${limit}&status=${status}&search=${search}`
+        : null;
+
+    const pagination = {
+      ...result.pagination,
+      next,
+      previous,
+    };
+
     return success(
       res,
       result.applications,
       "Applications fetched successfully",
-      result.pagination
+      pagination
     );
   } catch (err) {
     next(err);

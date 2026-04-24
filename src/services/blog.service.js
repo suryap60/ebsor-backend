@@ -21,8 +21,6 @@ export const getAllBlogs = async ({ page, limit, search }) => {
       page,
       page_size: limit,
       total_pages: totalPages,
-      has_next: page < totalPages,
-      has_previous: page > 1,
     },
   };
 };
