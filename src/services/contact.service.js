@@ -40,7 +40,7 @@ export const updateStatus = async (id, status) => {
   return await Contact.findByIdAndUpdate(
     id,
     { status },
-    { new: true }
+    { returnDocument: "after" }
   );
 };
 

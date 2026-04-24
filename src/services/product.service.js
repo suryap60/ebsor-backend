@@ -38,7 +38,7 @@ export const createProduct = async (data) => {
 
 export const updateProduct = async (id, data) => {
   return await Product.findByIdAndUpdate(id, data, {
-    new: true,
+    returnDocument: "after",
   });
 };
 

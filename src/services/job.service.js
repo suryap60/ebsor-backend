@@ -41,9 +41,9 @@ export const createJob = async (data) => {
 
 // UPDATE JOB
 export const updateJob = async (id, data) => {
-  return await Job.findByIdAndUpdate(id, data, { new: true });
+  return await Job.findByIdAndUpdate(id, data, { returnDocument: "after" });
 };
-
+ 
 // DELETE JOB
 export const deleteJob = async (id) => {
   return await Job.findByIdAndDelete(id);
