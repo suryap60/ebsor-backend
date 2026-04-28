@@ -1,15 +1,24 @@
 import { body } from "express-validator";
 
-export const productValidation = [
+export const createProductValidation = [
+  body("name").notEmpty().withMessage("Product name is required"),
+  body("description").notEmpty().withMessage("Description is required"),
+  body("category").notEmpty().withMessage("Category is required"),
+];
+
+export const updateProductValidation = [
   body("name")
+    .optional()
     .notEmpty()
-    .withMessage("Product name is required"),
+    .withMessage("Product name cannot be empty"),
 
   body("description")
+    .optional()
     .notEmpty()
-    .withMessage("Description is required"),
+    .withMessage("Description cannot be empty"),
 
   body("category")
+    .optional()
     .notEmpty()
-    .withMessage("Category is required"),
+    .withMessage("Category cannot be empty"),
 ];
