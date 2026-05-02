@@ -44,7 +44,7 @@ export const refresh = async (req, res) => {
       process.env.JWT_REFRESH_SECRET
     );
 
-    const newAccessToken = generateAccessToken({ _id: decoded.id, role: decoded.role, });
+    const newAccessToken = generateAccessToken({ id: decoded.id, role: decoded.role, });
 
     return success(res, { accessToken: newAccessToken });
   } catch (err) {

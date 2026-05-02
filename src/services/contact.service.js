@@ -6,8 +6,20 @@ export const createContact = async (data) => {
 };
 
 // GET ALL MESSAGES (Admin)
-export const getAllContacts = async ({ page, limit, status }) => {
+export const getAllContacts = async ({ page, limit, status, search }) => {
   const query = status ? { status } : {};
+
+  if (status) {
+    query.status = status;
+  }
+
+  // search by name/email
+  if (search) {
+    query.$or = [
+      { name: { $regex: search, $options: "i" } },
+      { email: { $regex: search, $options: "i" } },
+    ];
+  }
 
   const total = await Contact.countDocuments(query);
 

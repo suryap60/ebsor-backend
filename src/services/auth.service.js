@@ -2,7 +2,7 @@ import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 
 export const registerUser = async (data) => {
-  const { name, email, password } = data;
+  const { name, email, password, role } = data;
 
   const existing = await User.findOne({ email });
   if (existing) throw new Error("User already exists");
@@ -13,6 +13,7 @@ export const registerUser = async (data) => {
     name,
     email,
     password: hashedPassword,
+    role,
   });
 };
 

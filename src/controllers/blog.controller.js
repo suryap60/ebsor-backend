@@ -1,3 +1,4 @@
+import blogModel from "../models/blog.model.js";
 import * as blogService from "../services/blog.service.js";
 import { success, created, error } from "../utils/response.js";
 import { slugify } from "../utils/slugify.js";
@@ -60,6 +61,21 @@ export const getBlogBySlug = async (req, res, next) => {
     return success(res, blog, "Blog fetched successfully");
   } catch (err) {
     next(err);
+  }
+};
+
+// GET SINGLE BLOG BY ID
+export const getBlogById = async (req, res) => {
+  try {
+    const blog = await blogModel.findById(req.params.id);
+
+    if (!blog) {
+      return error(res, "Blog not found", 404);
+    }
+
+    return success(res, blog);
+  } catch (err) {
+    return error(res, err.message);
   }
 };
 

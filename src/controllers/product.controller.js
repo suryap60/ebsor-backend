@@ -1,3 +1,4 @@
+import productModel from "../models/product.model.js";
 import * as productService from "../services/product.service.js";
 import { success, created, error } from "../utils/response.js";
 import { slugify } from "../utils/slugify.js";
@@ -66,6 +67,21 @@ export const getProductBySlug = async (req, res, next) => {
     return success(res, product, "Product fetched successfully");
   } catch (err) {
     next(err);
+  }
+};
+
+// get product by id
+export const getProductById = async (req, res) => {
+  try {
+    const product = await productModel.findById(req.params.id);
+
+    if (!product) {
+      return error(res, "Product not found", 404);
+    }
+
+    return success(res, product);
+  } catch (err) {
+    return error(res, err.message);
   }
 };
 

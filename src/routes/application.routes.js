@@ -17,7 +17,7 @@ router.post("/", applicationValidation, validate, applyJob);
 
 // ADMIN
 router.get("/", auth, getApplications);
-router.get("/:id", auth, getApplicationById);
-router.put("/:id/status", auth, updateApplicationStatus);
+router.get("/id/:id", auth, getApplicationById);
+router.patch("/:id/status", auth, updateApplicationStatus);
 
 export default router;

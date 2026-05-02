@@ -5,6 +5,7 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
+  getProductById,
 } from "../controllers/product.controller.js";
 
 import auth from "../middleware/auth.middleware.js";
@@ -15,7 +16,8 @@ import { validate } from "../middleware/validate.middleware.js";
 const router = express.Router();
 
 router.get("/", getProducts);
-router.get("/:slug", getProductBySlug);
+router.get("/slug/:slug", getProductBySlug);
+router.get("/id/:id", getProductById);
 
 router.post("/", auth, isAdmin, createProductValidation, validate, createProduct);
 router.put("/:id", auth, isAdmin, updateProductValidation, validate, updateProduct);

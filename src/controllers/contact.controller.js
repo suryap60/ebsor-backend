@@ -21,12 +21,13 @@ export const submitContact = async (req, res) => {
 // ADMIN: Get All Messages
 export const getContacts = async (req, res, next) => {
   try {
-    const { page = 1, limit = 10, status } = req.query;
+    const { page = 1, limit = 10, status, search } = req.query;
 
     const result = await contactService.getAllContacts({
       page: Number(page),
       limit: Number(limit),
       status,
+      search,
     });
 
     const baseUrl = `${req.protocol}://${req.get("host")}${req.baseUrl}`;
@@ -37,13 +38,13 @@ export const getContacts = async (req, res, next) => {
     // next URL
     const next =
       currentPage < totalPages
-        ? `${baseUrl}?page=${currentPage + 1}&limit=${limit}&status=${status}`
+        ? `${baseUrl}?page=${currentPage + 1}&limit=${limit}&status=${status}&search=${search}`
         : null;
 
     // previous URL
     const previous =
       currentPage > 1
-        ? `${baseUrl}?page=${currentPage - 1}&limit=${limit}&status=${status}`
+        ? `${baseUrl}?page=${currentPage - 1}&limit=${limit}&status=${status}&search=${search}`
         : null;
 
     const pagination = {

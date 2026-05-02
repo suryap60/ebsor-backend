@@ -18,7 +18,7 @@ router.post("/", contactValidation, validate, submitContact);
 
 // ADMIN
 router.get("/", auth, getContacts);
-router.get("/:id", auth, getContactById);
+router.get("/id/:id", auth, getContactById);
 router.patch("/:id/status", auth, updateContactStatus);
 router.delete("/:id", auth, deleteContact);
 
