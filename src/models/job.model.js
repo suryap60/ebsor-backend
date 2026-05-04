@@ -7,6 +7,7 @@ const jobSchema = new mongoose.Schema(
 
     description: { type: String, required: true },
     shortDescription: String,
+    department: String,
 
     location: String,
     employmentType: {

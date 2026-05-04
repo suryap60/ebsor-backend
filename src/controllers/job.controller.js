@@ -1,3 +1,4 @@
+import jobModel from "../models/job.model.js";
 import * as jobService from "../services/job.service.js";
 import { success, created, error } from "../utils/response.js";
 import { slugify } from "../utils/slugify.js";
@@ -53,29 +54,75 @@ export const getJobBySlug = async (req, res) => {
   return success(res, job, "Job fetched");
 };
 
+export const getJobById = async (req, res) => {
+  try {
+    const job = await jobModel.findById(req.params.id);
+
+    if (!job) {
+      return error(res, "job not found", 404);
+    }
+
+    return success(res, job);
+  } catch (err) {
+    return error(res, err.message);
+  }
+};
+
 // CREATE JOB
-export const createJob = async (req, res) => {
-  const slug = slugify(req.body.title);
+export const createJob = async (req, res, next) => {
+  try {
+    const { title } = req.body;
 
-  const job = await jobService.createJob({
-    ...req.body,
-    slug,
-  });
+    if (!title) {
+      return error(res, "Title is required", 400);
+    }
 
-  return created(res, job, "Job created");
+    const slug = slugify(title);
+
+    // CHECK DUPLICATE
+    const existing = await jobModel.findOne({ slug });
+    if (existing) {
+      return error(res, "Job already exists with this title", 400);
+    }
+
+    const job = await jobService.createJob({
+      ...req.body,
+      slug,
+    });
+
+    return created(res, job, "Job created successfully");
+  } catch (err) {
+    next(err);
+  }
 };
 
 // UPDATE JOB
 export const updateJob = async (req, res) => {
-  if (req.body.title) {
-    req.body.slug = slugify(req.body.title);
+  try {
+    if (req.body.title) {
+      const newSlug = slugify(req.body.title);
+
+      // check existing slug (exclude current job)
+      const existing = await jobModel.findOne({
+        slug: newSlug,
+        _id: { $ne: req.params.id },
+      });
+
+      if (existing) {
+        return error(res, "Job already exists. Try different title.", 400);
+      }
+
+      req.body.slug = newSlug;
+    }
+
+    const job = await jobService.updateJob(req.params.id, req.body);
+
+    if (!job) return error(res, "Job not found", 404);
+
+    return success(res, job, "Job updated successfully");
+  } catch (err) {
+    return error(res, err.message);
   }
-
-  const job = await jobService.updateJob(req.params.id, req.body);
-
-  if (!job) return error(res, "Job not found", 404);
-
-  return success(res, job, "Job updated");
 };
 
 // DELETE JOB

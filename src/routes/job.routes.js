@@ -6,21 +6,26 @@ import {
   updateJob,
   deleteJob,
   toggleJobStatus,
+  getJobById,
 } from "../controllers/job.controller.js";
 
 import auth from "../middleware/auth.middleware.js";
-import { jobValidation } from "../validators/job.validator.js";
 import { validate } from "../middleware/validate.middleware.js";
+import isAdmin from "../middleware/admin.middleware.js";
+import { createJobValidation, updateJobValidation } from "../validators/job.validator.js";
+import authOptional from "../middleware/authOptional.middleware.js";
 
 const router = express.Router();
 
 // PUBLIC
-router.get("/", getJobs);
-router.get("/:slug", getJobBySlug);
+router.get("/", authOptional, getJobs);
+router.get("/slug/:slug", getJobBySlug);
+router.get("/id/:id", getJobById);
 
 // ADMIN
-router.post("/", auth, jobValidation, validate, createJob);
-router.put("/:id", auth, jobValidation, validate, updateJob);
+// router.get("/admin", auth, isAdmin, getJobs);
+router.post("/", auth, createJobValidation, validate, isAdmin, createJob);
+router.put("/:id", auth, updateJobValidation, validate, isAdmin, updateJob);
 router.delete("/:id", auth, deleteJob);
 router.patch("/:id/toggle", auth, toggleJobStatus);
 
