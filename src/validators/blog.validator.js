@@ -15,9 +15,9 @@ export const createBlogValidation = [
     .withMessage("Excerpt must be under 200 characters"),
 
   body("featuredImage")
-    .optional()
-    .isURL()
-    .withMessage("Featured image must be a valid URL"),
+    .optional().isString(),
+    // .isURL()
+    // .withMessage("Featured image must be a valid URL"),
 
   body("tags")
     .optional()
@@ -52,9 +52,9 @@ export const updateBlogValidation = [
     .withMessage("Excerpt must be under 200 characters"),
 
   body("featuredImage")
-    .optional()
-    .isURL()
-    .withMessage("Featured image must be valid URL"),
+    .optional().isString(),
+    // .isURL()
+    // .withMessage("Featured image must be valid URL"),
 
   body("tags")
     .optional()

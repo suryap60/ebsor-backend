@@ -6,12 +6,13 @@ import { slugify } from "../utils/slugify.js";
 // GET ALL BLOGS
 export const getBlogs = async (req, res, next) => {
   try {
-    const { page = 1, limit = 10, search = "" } = req.query;
+    const { page = 1, limit = 10, search = "", status = "" } = req.query;
 
     const result = await blogService.getAllBlogs({
       page: Number(page),
       limit: Number(limit),
       search,
+      status
     });
 
     const baseUrl = `${req.protocol}://${req.get("host")}${req.baseUrl}`;
@@ -22,12 +23,12 @@ export const getBlogs = async (req, res, next) => {
     // build next & previous
     const next =
       currentPage < totalPages
-        ? `${baseUrl}?page=${currentPage + 1}&limit=${limit}&search=${search}`
+        ? `${baseUrl}?page=${currentPage + 1}&limit=${limit}&search=${search}&status=${status}`
         : null;
 
     const previous =
       currentPage > 1
-        ? `${baseUrl}?page=${currentPage - 1}&limit=${limit}&search=${search}`
+        ? `${baseUrl}?page=${currentPage - 1}&limit=${limit}&search=${search}&status=${status}`
         : null;
 
     const pagination = {

@@ -1,9 +1,15 @@
 import Blog from "../models/blog.model.js";
 
-export const getAllBlogs = async ({ page, limit, search }) => {
-  const query = search
-    ? { title: { $regex: search, $options: "i" } }
-    : {};
+export const getAllBlogs = async ({ page, limit, search, status }) => {
+  let query = {};
+
+  if (search) {
+    query.title = { $regex: search, $options: "i" };
+  }
+
+  if (status) {
+    query.status = status; 
+  }
 
   const total = await Blog.countDocuments(query);
 
