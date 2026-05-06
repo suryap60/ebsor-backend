@@ -104,12 +104,15 @@ export const createProduct = async (req, res, next) => {
     // Check duplicate
     const existing = await productService.getProductBySlug(slug);
     if (existing) {
-      return error(res, "Product with same name already exists", 400);
+      return error(res, "Product already exists", 400);
     }
+
+    const imagePaths = req.files.map(file => `/uploads/${file.filename}`);
 
     const product = await productService.createProduct({
       ...req.body,
       slug,
+      images: imagePaths,
     });
 
     return created(res, product, "Product created successfully");
@@ -127,11 +130,28 @@ export const updateProduct = async (req, res, next) => {
     const { id } = req.params;
 
     // If name updated → update slug
+    let updateData = { ...req.body };
+
+    // slug update
     if (req.body.name) {
-      req.body.slug = slugify(req.body.name);
+      updateData.slug = slugify(req.body.name);
     }
 
-    const updated = await productService.updateProduct(id, req.body);
+    // handle existing images
+    let existingImages = [];
+    if (req.body.existingImages) {
+      existingImages = JSON.parse(req.body.existingImages);
+    }
+
+    // handle new uploaded images
+    const newImages = req.files?.map(
+      (file) => `/uploads/${file.filename}`
+    ) || [];
+
+    // merge images
+    updateData.images = [...existingImages, ...newImages];
+
+    const updated = await productService.updateProduct(id, updateData);
 
     if (!updated) {
       return error(res, "Product not found", 404);
