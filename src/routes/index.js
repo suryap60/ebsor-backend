@@ -8,6 +8,7 @@ import contactRoutes from "./contact.routes.js";
 import applicationRoutes from "./application.routes.js";
 import testimonialRoutes from "./testimonial.routes.js";
 import sectionsRoutes from "./section.routes.js";
+import profileRoutes from "./profile.routes.js";
 
 const router = express.Router();
 
@@ -19,6 +20,7 @@ router.use("/contact", contactRoutes);
 router.use("/applications", applicationRoutes);
 router.use("/testimonials", testimonialRoutes);
 router.use("/sections", sectionsRoutes);
+router.use("/profile", profileRoutes);
 
 
 

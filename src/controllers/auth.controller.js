@@ -21,10 +21,17 @@ export const login = async (req, res, next) => {
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
+    const safeUser = {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    };
+
     return success(res, {
       accessToken,
       refreshToken,
-      user,
+      user: safeUser,
     });
   } catch (err) {
     return error(res, err.message, 401);
