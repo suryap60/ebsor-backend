@@ -7,31 +7,52 @@ export const applicationValidation = [
     .isMongoId()
     .withMessage("Invalid Job ID"),
 
-  body("name")
+  body("firstName")
     .notEmpty()
-    .withMessage("Name is required")
-    .isLength({ min: 3 })
-    .withMessage("Name must be at least 3 characters"),
+    .withMessage("First name is required")
+    .isLength({ min: 2 })
+    .withMessage("First name must be at least 2 characters"),
+
+  body("lastName")
+    .optional({ values: "falsy" })
+    .isLength({ min: 1 })
+    .withMessage("Last name is invalid"),
 
   body("email")
+    .trim()
     .notEmpty()
     .withMessage("Email is required")
     .isEmail()
-    .withMessage("Invalid email format"),
+    .withMessage("Invalid email format")
+    .normalizeEmail(),
 
   body("phone")
     .notEmpty()
     .withMessage("Phone number is required")
-    .isMobilePhone("any")
-    .withMessage("Invalid phone number"),
+    .isNumeric()
+    .withMessage("Phone number must contain only numbers")
+    .isLength({ min: 10, max: 10 })
+    .withMessage("Phone number must be 10 digits"),
 
-  body("resume")
-    .optional()
-    .isString()
-    .withMessage("Resume must be a string (file URL)"),
+  body("country")
+    .optional({ values: "falsy" })
+    .isString(),
 
-  body("coverLetter")
-    .optional()
-    .isLength({ min: 10 })
-    .withMessage("Cover letter must be at least 10 characters"),
+  body("state")
+    .optional({ values: "falsy" })
+    .isString(),
+
+  body("place")
+    .optional({ values: "falsy" })
+    .isString(),
+
+  body("experience")
+    .optional({ values: "falsy" })
+    .isNumeric()
+    .withMessage("Experience must be a number"),
+
+  body("additionalInfo")
+    .optional({ values: "falsy" })
+    .isLength({ max: 2000 })
+    .withMessage("Additional info too long"),
 ];

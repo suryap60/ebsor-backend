@@ -21,7 +21,7 @@ router.get("/slug/:slug", getProductBySlug);
 router.get("/id/:id", getProductById);
 
 router.post("/", auth, isAdmin, upload.array("images",5), createProductValidation, validate, createProduct);
-router.put("/:id", auth, isAdmin, upload.array("images"), updateProductValidation, validate, updateProduct);
+router.put("/:id", auth, isAdmin, upload.array("images",5), updateProductValidation, validate, updateProduct);
 router.delete("/:id", auth, isAdmin, deleteProduct);
 
 export default router;

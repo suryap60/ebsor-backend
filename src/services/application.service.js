@@ -15,7 +15,8 @@ export const getApplications = async ({ page, limit, status, search }) => {
   // search by name/email
   if (search) {
     query.$or = [
-      { name: { $regex: search, $options: "i" } },
+      { firstName: { $regex: search, $options: "i" } },
+      { lastName: { $regex: search, $options: "i" } },
       { email: { $regex: search, $options: "i" } },
     ];
   }

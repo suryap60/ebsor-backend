@@ -8,12 +8,50 @@ const applicationSchema = new mongoose.Schema(
       required: true,
     },
 
-    name: { type: String, required: true },
-    email: { type: String, required: true },
-    phone: { type: String, required: true },
+    firstName: {
+      type: String,
+      required: true,
+    },
 
-    resume: { type: String }, // file URL
-    coverLetter: { type: String },
+    lastName: {
+      type: String,
+    },
+
+    email: {
+      type: String,
+      required: true,
+    },
+
+    phone: {
+      type: String,
+      required: true,
+    },
+
+    country: {
+      type: String,
+    },
+
+    state: {
+      type: String,
+    },
+
+    place: {
+      type: String,
+    },
+
+    experience: {
+      type: Number,
+      default: 0,
+    },
+
+    additionalInfo: {
+      type: String,
+    },
+
+    resume: {
+      type: String, // uploaded file URL
+      required: true,
+    },
 
     status: {
       type: String,

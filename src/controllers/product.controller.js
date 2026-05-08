@@ -2,6 +2,8 @@ import productModel from "../models/product.model.js";
 import * as productService from "../services/product.service.js";
 import { success, created, error } from "../utils/response.js";
 import { slugify } from "../utils/slugify.js";
+import cloudinary from "../config/cloudinary.js";
+import streamifier from "streamifier";
 
 /**
  * @desc Get all products (with pagination & search)
@@ -93,29 +95,55 @@ export const createProduct = async (req, res, next) => {
   try {
     const { name, description } = req.body;
 
-    // Basic validation
     if (!name || !description) {
       return error(res, "Name and description are required", 400);
     }
 
-    // Generate slug
     const slug = slugify(name);
 
-    // Check duplicate
     const existing = await productService.getProductBySlug(slug);
+
     if (existing) {
       return error(res, "Product already exists", 400);
     }
 
-    const imagePaths = req.files.map(file => `/uploads/${file.filename}`);
+    // CLOUDINARY MULTIPLE IMAGE UPLOAD
+    let imageUrls = [];
+
+    if (req.files && req.files.length > 0) {
+      const uploadPromises = req.files.map((file) => {
+        return new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            {
+              folder: "products",
+            },
+            (err, result) => {
+              if (err) reject(err);
+              else resolve(result.secure_url);
+            }
+          );
+
+          streamifier
+            .createReadStream(file.buffer)
+            .pipe(stream);
+        });
+      });
+
+      imageUrls = await Promise.all(uploadPromises);
+    }
 
     const product = await productService.createProduct({
       ...req.body,
       slug,
-      images: imagePaths,
+      images: imageUrls,
     });
 
-    return created(res, product, "Product created successfully");
+    return created(
+      res,
+      product,
+      "Product created successfully"
+    );
+
   } catch (err) {
     next(err);
   }
@@ -144,9 +172,28 @@ export const updateProduct = async (req, res, next) => {
     }
 
     // handle new uploaded images
-    const newImages = req.files?.map(
-      (file) => `/uploads/${file.filename}`
-    ) || [];
+    let newImages = [];
+
+    if (req.files?.length > 0) {
+      const uploadPromises = req.files.map((file) => {
+        return new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            {
+              folder: "products",
+            },
+
+            (error, result) => {
+              if (result) resolve(result.secure_url);
+              else reject(error);
+            }
+          );
+
+          streamifier.createReadStream(file.buffer).pipe(stream);
+        });
+      });
+
+      newImages = await Promise.all(uploadPromises);
+    }
 
     // merge images
     updateData.images = [...existingImages, ...newImages];

@@ -1,23 +1,67 @@
 import * as applicationService from "../services/application.service.js";
 import { success, created, error } from "../utils/response.js";
+import cloudinary from "../config/cloudinary.js";
+import streamifier from "streamifier";
 
 /**
  * @desc Apply for job (USER)
  * @route POST /api/applications
  */
-export const applyJob = async (req, res, next) => {
+export const applyJob = async (req, res) => {
   try {
-    const { job, name, email, phone } = req.body;
+    console.log("BODY =>", req.body);
+    console.log("FILE =>", req.file);
 
-    if (!job || !name || !email || !phone) {
+    const { job, firstName, email, phone } = req.body;
+
+    if (!job || !firstName || !email || !phone) {
       return error(res, "All fields are required", 400);
     }
 
-    const application = await applicationService.createApplication(req.body);
+    if (!req.file) {
+      return error(res, "Resume file is required", 400);
+    }
 
-    return created(res, application, "Application submitted successfully");
+    // Upload to Cloudinary
+    const uploadFromBuffer = () => {
+      return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            folder: "job-applications",
+            resource_type: "raw",
+          },
+
+          (error, result) => {
+            if (result) resolve(result);
+            else reject(error);
+          }
+        );
+
+        streamifier.createReadStream(req.file.buffer).pipe(stream);
+      });
+    };
+
+    const result = await uploadFromBuffer();
+
+    const application =
+      await applicationService.createApplication({
+        ...req.body,
+        resume: result.secure_url,
+      });
+
+    return created(
+      res,
+      application,
+      "Application submitted successfully"
+    );
+
   } catch (err) {
-    next(err);
+    console.log("FULL ERROR =>", err);
+
+    return res.status(500).json({
+      success: false,
+      message: err?.message || "Server Error",
+    });
   }
 };
 
