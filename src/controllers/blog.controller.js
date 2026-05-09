@@ -2,6 +2,8 @@ import blogModel from "../models/blog.model.js";
 import * as blogService from "../services/blog.service.js";
 import { success, created, error } from "../utils/response.js";
 import { slugify } from "../utils/slugify.js";
+import cloudinary from "../config/cloudinary.js";
+import streamifier from "streamifier";
 
 // GET ALL BLOGS
 export const getBlogs = async (req, res, next) => {
@@ -92,13 +94,43 @@ export const createBlog = async (req, res, next) => {
     const slug = slugify(title);
 
     const existing = await blogService.getBlogBySlug(slug);
+
     if (existing) {
       return error(res, "Blog already exists", 400);
+    }
+
+    let featuredImage = "";
+
+    // Upload image to cloudinary
+    if (req.file) {
+      const uploadFromBuffer = () => {
+        return new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            {
+              folder: "blogs",
+            },
+
+            (error, result) => {
+              if (result) resolve(result);
+              else reject(error);
+            }
+          );
+
+          streamifier
+            .createReadStream(req.file.buffer)
+            .pipe(stream);
+        });
+      };
+
+      const result = await uploadFromBuffer();
+
+      featuredImage = result.secure_url;
     }
 
     const blog = await blogService.createBlog({
       ...req.body,
       slug,
+      featuredImage,
     });
 
     return created(res, blog, "Blog created successfully");
@@ -112,11 +144,44 @@ export const updateBlog = async (req, res, next) => {
   try {
     const { id } = req.params;
 
+    let updateData = { ...req.body };
+
     if (req.body.title) {
       req.body.slug = slugify(req.body.title);
     }
 
-    const updated = await blogService.updateBlog(id, req.body);
+    // update slug if title changed
+    if (req.body.title) {
+      updateData.slug = slugify(req.body.title);
+    }
+
+    // upload new image
+    if (req.file) {
+      const uploadFromBuffer = () => {
+        return new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            {
+              folder: "blogs",
+            },
+
+            (error, result) => {
+              if (result) resolve(result);
+              else reject(error);
+            }
+          );
+
+          streamifier
+            .createReadStream(req.file.buffer)
+            .pipe(stream);
+        });
+      };
+
+      const result = await uploadFromBuffer();
+
+      updateData.featuredImage = result.secure_url;
+    }
+
+    const updated = await blogService.updateBlog(id, updateData);
 
     if (!updated) {
       return error(res, "Blog not found", 404);
