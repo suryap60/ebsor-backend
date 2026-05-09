@@ -5,15 +5,30 @@ import { createTestimonialValidation, updateTestimonialValidation } from "../val
 import { validate } from "../middleware/validate.middleware.js";
 import { createTestimonial, deleteTestimonial, getTestimonialById, getTestimonials, updateTestimonial } from "../controllers/testimonial.controller.js";
 import auth from "../middleware/auth.middleware.js";
+import upload from "../middleware/upload.middleware.js";
 
 const router = express.Router();
 
 router.get("/", getTestimonials);
 router.get("/:id", getTestimonialById);
 
-router.post("/", createTestimonialValidation, auth, validate, createTestimonial);
+router.post(
+    "/",  
+    auth, 
+    upload.single("image"), 
+    createTestimonialValidation,
+    validate, 
+    createTestimonial
+);
 
-router.put("/:id", updateTestimonialValidation, auth, validate, updateTestimonial);
+router.put(
+  "/:id",
+  auth,
+  upload.single("image"),
+  updateTestimonialValidation,
+  validate,
+  updateTestimonial
+);
 
 router.delete("/:id", auth, deleteTestimonial);
 

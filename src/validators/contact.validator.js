@@ -12,9 +12,12 @@ export const contactValidation = [
     .withMessage("Valid email is required"),
 
   body("phone")
-    .optional()
+    .optional({ values: "falsy" })
     .isMobilePhone("any")
     .withMessage("Invalid phone number"),
+
+  body("name")
+    .optional({ values: "falsy" }),
 
   body("message")
     .notEmpty()

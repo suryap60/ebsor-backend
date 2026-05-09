@@ -1,5 +1,7 @@
 import * as testimonialService from "../services/testimonial.service.js";
 import { success, created, error } from "../utils/response.js";
+import cloudinary from "../config/cloudinary.js";
+import streamifier from "streamifier";
 
 // GET ALL
 export const getTestimonials = async (req, res, next) => {
@@ -62,8 +64,57 @@ export const getTestimonialById = async (req, res, next) => {
 // CREATE
 export const createTestimonial = async (req, res, next) => {
   try {
-    const testimonial = await testimonialService.createTestimonial(req.body);
-    return created(res, testimonial, "Testimonial created successfully");
+
+    let image = "";
+
+    // Upload image
+    if (req.file) {
+      const uploadFromBuffer = () => {
+        return new Promise(
+          (resolve, reject) => {
+            const stream =
+              cloudinary.uploader.upload_stream(
+                {
+                  folder: "testimonials",
+                },
+
+                (error, result) => {
+                  if (result) {
+                    resolve(result);
+                  } else {
+                    reject(error);
+                  }
+                }
+              );
+
+            streamifier
+              .createReadStream(
+                req.file.buffer
+              )
+              .pipe(stream);
+          }
+        );
+      };
+
+      const result =
+        await uploadFromBuffer();
+
+      image = result.secure_url;
+    }
+
+    const testimonial =
+      await testimonialService.createTestimonial(
+        {
+          ...req.body,
+          image,
+        }
+      );
+
+    return created(
+      res,
+      testimonial,
+      "Testimonial created successfully"
+    );
   } catch (err) {
     next(err);
   }
@@ -72,13 +123,61 @@ export const createTestimonial = async (req, res, next) => {
 // UPDATE
 export const updateTestimonial = async (req, res, next) => {
   try {
-    const updated = await testimonialService.updateTestimonial(
-      req.params.id,
-      req.body
-    );
+
+    const { id } = req.params;
+
+    let updateData = {
+      ...req.body,
+    };
+
+    // Upload new image
+    if (req.file) {
+      const uploadFromBuffer = () => {
+        return new Promise(
+          (resolve, reject) => {
+            const stream =
+              cloudinary.uploader.upload_stream(
+                {
+                  folder: "testimonials",
+                },
+
+                (error, result) => {
+                  if (result) {
+                    resolve(result);
+                  } else {
+                    reject(error);
+                  }
+                }
+              );
+
+            streamifier
+              .createReadStream(
+                req.file.buffer
+              )
+              .pipe(stream);
+          }
+        );
+      };
+
+      const result =
+        await uploadFromBuffer();
+
+      updateData.image =
+        result.secure_url;
+    }
+
+    const updated =
+      await testimonialService.updateTestimonial(
+        id,
+        updateData
+      );
 
     if (!updated) {
-      return error(res, "Testimonial not found", 404);
+      return error(
+        res,
+        "Testimonial not found",
+        404
+      );
     }
 
     return success(res, updated, "Updated successfully");

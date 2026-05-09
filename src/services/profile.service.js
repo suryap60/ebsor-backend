@@ -26,7 +26,9 @@ export const updateProfileService = async (userId, data) => {
   const updatedUser = await User.findByIdAndUpdate(
     userId,
     { name, email },
-    { new: true }
+    {
+      returnDocument: "after",
+    }
   ).select("-password");
 
   return updatedUser;

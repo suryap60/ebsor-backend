@@ -36,7 +36,9 @@ export const createSection = async (data) => {
 };
 
 export const updateSection = async (id, data) => {
-  return await Section.findByIdAndUpdate(id, data, { new: true });
+  return await Section.findByIdAndUpdate(id, data, {
+    returnDocument: "after",
+  });
 };
 
 export const deleteSection = async (id) => {

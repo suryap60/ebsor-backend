@@ -42,7 +42,9 @@ export const createTestimonial = async (data) => {
 };
 
 export const updateTestimonial = async (id, data) => {
-  return await Testimonial.findByIdAndUpdate(id, data, { new: true });
+  return await Testimonial.findByIdAndUpdate(id, data, {
+    returnDocument: "after",
+  });
 };
 
 export const deleteTestimonial = async (id) => {

@@ -40,7 +40,9 @@ export const createBlog = async (data) => {
 };
 
 export const updateBlog = async (id, data) => {
-  return await Blog.findByIdAndUpdate(id, data, { new: true });
+  return await Blog.findByIdAndUpdate(id, data, {
+    returnDocument: "after",
+  });
 };
 
 export const deleteBlog = async (id) => {

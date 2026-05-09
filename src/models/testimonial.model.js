@@ -22,6 +22,9 @@ const testimonialSchema = new mongoose.Schema(
       min: 1,
       max: 5,
     },
+    image: {
+        type: String,
+      },
   },
   { timestamps: true }
 );
