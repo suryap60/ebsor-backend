@@ -9,7 +9,7 @@ const sectionSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     slug: { type: String, required: true, unique: true }, 
-    type: { type: String, enum: ["terms", "faq", "privacy"], default: "terms" },
+    type: { type: String, enum: ["terms", "faq", "privacy", "refund"], default: "terms" },
 
     content: { type: String }, // for terms/privacy
 

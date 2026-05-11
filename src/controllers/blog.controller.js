@@ -127,8 +127,19 @@ export const createBlog = async (req, res, next) => {
       featuredImage = result.secure_url;
     }
 
+    let tags = [];
+
+    if (req.body.tags) {
+      try {
+        tags = JSON.parse(req.body.tags);
+      } catch (err) {
+        tags = [];
+      }
+    }
+
     const blog = await blogService.createBlog({
       ...req.body,
+      tags,
       slug,
       featuredImage,
     });
@@ -144,7 +155,17 @@ export const updateBlog = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    let updateData = { ...req.body };
+    let updateData = {
+      ...req.body,
+    };
+
+    if (req.body.tags) {
+      try {
+        updateData.tags = JSON.parse(req.body.tags);
+      } catch (err) {
+        updateData.tags = [];
+      }
+    }
 
     if (req.body.title) {
       req.body.slug = slugify(req.body.title);

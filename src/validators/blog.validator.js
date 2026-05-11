@@ -19,10 +19,22 @@ export const createBlogValidation = [
     // .isURL()
     // .withMessage("Featured image must be a valid URL"),
 
-  body("tags")
+   body("tags")
     .optional()
-    .isArray()
-    .withMessage("Tags must be an array"),
+    .custom((value) => {
+      try {
+        const parsed = JSON.parse(value);
+
+        if (!Array.isArray(parsed)) {
+          throw new Error();
+        }
+
+        return true;
+      } catch (err) {
+        throw new Error("Tags must be an array");
+      }
+    }),
+
 
   body("category")
     .optional()
@@ -58,8 +70,19 @@ export const updateBlogValidation = [
 
   body("tags")
     .optional()
-    .isArray()
-    .withMessage("Tags must be an array"),
+    .custom((value) => {
+      try {
+        const parsed = JSON.parse(value);
+
+        if (!Array.isArray(parsed)) {
+          throw new Error();
+        }
+
+        return true;
+      } catch (err) {
+        throw new Error("Tags must be an array");
+      }
+    }),
 
   body("category")
     .optional()
