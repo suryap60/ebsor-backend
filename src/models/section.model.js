@@ -1,8 +1,21 @@
 import mongoose from "mongoose";
 
 const faqSchema = new mongoose.Schema({
-  question: String,
-  answer: String,
+   question: {
+    type: String,
+    required: true,
+  },
+
+  answer: {
+    type: String,
+    required: true,
+  },
+
+  category: {
+    type: String,
+    required: true,
+    trim: true,
+  },
 });
 
 const sectionSchema = new mongoose.Schema(
