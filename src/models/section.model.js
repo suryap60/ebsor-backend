@@ -11,11 +11,12 @@ const faqSchema = new mongoose.Schema({
     required: true,
   },
 
-  category: {
-    type: String,
-    required: true,
-    trim: true,
-  },
+  categories: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "FaqCategory",
+    },
+  ],
 });
 
 const sectionSchema = new mongoose.Schema(

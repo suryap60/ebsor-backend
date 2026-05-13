@@ -8,6 +8,7 @@ export const getAllSections = async ({ page, limit, search }) => {
   const total = await Section.countDocuments(query);
 
   const sections = await Section.find(query)
+    .populate("faqs.categories")
     .skip((page - 1) * limit)
     .limit(limit)
     .sort({ createdAt: -1 });
@@ -24,11 +25,13 @@ export const getAllSections = async ({ page, limit, search }) => {
 };
 
 export const getSectionBySlug = async (slug) => {
-  return await Section.findOne({ slug });
+  return await Section.findOne({ slug })
+  .populate("faqs.categories");
 };
 
 export const getSectionById = async (id) => {
-  return await Section.findById(id);
+  return await Section.findById(id)
+  .populate("faqs.categories")
 };
 
 export const createSection = async (data) => {

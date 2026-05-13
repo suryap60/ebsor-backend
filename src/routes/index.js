@@ -10,6 +10,7 @@ import testimonialRoutes from "./testimonial.routes.js";
 import sectionsRoutes from "./section.routes.js";
 import profileRoutes from "./profile.routes.js";
 import brandRoutes from "./brand.routes.js";
+import faqCategoryRoutes from "./faqCategory.routes.js";
 
 const router = express.Router();
 
@@ -23,6 +24,7 @@ router.use("/testimonials", testimonialRoutes);
 router.use("/sections", sectionsRoutes);
 router.use("/profile", profileRoutes);
 router.use("/brands", brandRoutes);
+router.use("/faq-categories", faqCategoryRoutes);
 
 
 
