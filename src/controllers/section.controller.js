@@ -1,4 +1,5 @@
 import * as sectionService from "../services/section.service.js";
+import { emitSectionCreated, emitSectionDeleted, emitSectionUpdated } from "../socket/socketEvents.js";
 import { success, error, created } from "../utils/response.js";
 import { slugify } from "../utils/slugify.js";
 
@@ -78,6 +79,8 @@ export const createSection = async (req, res, next) => {
       slug,
     });
 
+    emitSectionCreated(section);
+
     const cleaned = {
         ...section.toObject(),
     };
@@ -107,6 +110,8 @@ export const updateSection = async (req, res, next) => {
 
     const updated = await sectionService.updateSection(id, req.body);
 
+    emitSectionUpdated(updated);
+
     if (!updated) {
       return error(res, "Section not found", 404);
     }
@@ -123,6 +128,8 @@ export const deleteSection = async (req, res, next) => {
     const { id } = req.params;
 
     const deleted = await sectionService.deleteSection(id);
+
+    emitSectionDeleted(id);
 
     if (!deleted) {
       return error(res, "Section not found", 404);

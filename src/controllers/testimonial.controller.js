@@ -2,6 +2,7 @@ import * as testimonialService from "../services/testimonial.service.js";
 import { success, created, error } from "../utils/response.js";
 import cloudinary from "../config/cloudinary.js";
 import streamifier from "streamifier";
+import { emitTestimonialCreated, emitTestimonialDeleted, emitTestimonialUpdated } from "../socket/socketEvents.js";
 
 // GET ALL
 export const getTestimonials = async (req, res, next) => {
@@ -110,6 +111,8 @@ export const createTestimonial = async (req, res, next) => {
         }
       );
 
+    emitTestimonialCreated(testimonial);
+
     return created(
       res,
       testimonial,
@@ -172,6 +175,8 @@ export const updateTestimonial = async (req, res, next) => {
         updateData
       );
 
+    emitTestimonialUpdated(updated);
+
     if (!updated) {
       return error(
         res,
@@ -191,6 +196,8 @@ export const deleteTestimonial = async (req, res, next) => {
   try {
     const deleted = await testimonialService.deleteTestimonial(req.params.id);
 
+    emitTestimonialDeleted(req.params.id);
+    
     if (!deleted) {
       return error(res, "Testimonial not found", 404);
     }

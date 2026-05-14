@@ -4,6 +4,7 @@ import { success, created, error } from "../utils/response.js";
 import { slugify } from "../utils/slugify.js";
 import cloudinary from "../config/cloudinary.js";
 import streamifier from "streamifier";
+import { emitBlogCreated, emitBlogDeleted, emitBlogUpdated } from "../socket/socketEvents.js";
 
 // GET ALL BLOGS
 export const getBlogs = async (req, res, next) => {
@@ -144,6 +145,8 @@ export const createBlog = async (req, res, next) => {
       featuredImage,
     });
 
+    emitBlogCreated(blog);
+
     return created(res, blog, "Blog created successfully");
   } catch (err) {
     next(err);
@@ -204,6 +207,8 @@ export const updateBlog = async (req, res, next) => {
 
     const updated = await blogService.updateBlog(id, updateData);
 
+    emitBlogUpdated(updated)
+
     if (!updated) {
       return error(res, "Blog not found", 404);
     }
@@ -220,6 +225,8 @@ export const deleteBlog = async (req, res, next) => {
     const { id } = req.params;
 
     const deleted = await blogService.deleteBlog(id);
+
+    emitBlogDeleted(id);
 
     if (!deleted) {
       return error(res, "Blog not found", 404);

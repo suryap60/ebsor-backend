@@ -4,6 +4,7 @@ import { success, created, error } from "../utils/response.js";
 import { slugify } from "../utils/slugify.js";
 import cloudinary from "../config/cloudinary.js";
 import streamifier from "streamifier";
+import { emitProductCreated, emitProductDeleted, emitProductUpdated } from "../socket/socketEvents.js";
 
 /**
  * @desc Get all products (with pagination & search)
@@ -138,6 +139,8 @@ export const createProduct = async (req, res, next) => {
       images: imageUrls,
     });
 
+    emitProductCreated(product);
+
     return created(
       res,
       product,
@@ -200,6 +203,8 @@ export const updateProduct = async (req, res, next) => {
 
     const updated = await productService.updateProduct(id, updateData);
 
+    emitProductUpdated(updated);
+
     if (!updated) {
       return error(res, "Product not found", 404);
     }
@@ -219,6 +224,8 @@ export const deleteProduct = async (req, res, next) => {
     const { id } = req.params;
 
     const deleted = await productService.deleteProduct(id);
+
+    emitProductDeleted(id);
 
     if (!deleted) {
       return error(res, "Product not found", 404);

@@ -1,5 +1,6 @@
 import jobModel from "../models/job.model.js";
 import * as jobService from "../services/job.service.js";
+import { emitJobCreated, emitJobDeleted, emitJobUpdated } from "../socket/socketEvents.js";
 import { success, created, error } from "../utils/response.js";
 import { slugify } from "../utils/slugify.js";
 
@@ -90,6 +91,8 @@ export const createJob = async (req, res, next) => {
       slug,
     });
 
+    emitJobCreated(job);
+
     return created(res, job, "Job created successfully");
   } catch (err) {
     next(err);
@@ -117,6 +120,8 @@ export const updateJob = async (req, res) => {
 
     const job = await jobService.updateJob(req.params.id, req.body);
 
+    emitJobUpdated(job);
+
     if (!job) return error(res, "Job not found", 404);
 
     return success(res, job, "Job updated successfully");
@@ -128,6 +133,8 @@ export const updateJob = async (req, res) => {
 // DELETE JOB
 export const deleteJob = async (req, res) => {
   const job = await jobService.deleteJob(req.params.id);
+
+  emitJobDeleted(req.params.id);
 
   if (!job) return error(res, "Job not found", 404);
 

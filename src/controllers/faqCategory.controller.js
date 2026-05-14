@@ -1,6 +1,7 @@
 import faqCategoryModel from "../models/faqCategory.model.js";
 
 import * as faqCategoryService from "../services/faqCategory.service.js";
+import { emitFaqCategoryCreated, emitFaqCategoryDeleted, emitFaqCategoryUpdated } from "../socket/socketEvents.js";
 
 import { success, created, error } from "../utils/response.js";
 
@@ -125,6 +126,8 @@ export const createFaqCategory = async (
         slug,
       });
 
+    emitFaqCategoryCreated(category);
+
     return created(
       res,
       category,
@@ -169,6 +172,8 @@ export const updateFaqCategory = async (
         req.params.id,
         req.body
       );
+    
+    emitFaqCategoryUpdated(updated);
 
     if (!updated) {
       return error(
@@ -198,6 +203,8 @@ export const deleteFaqCategory = async (
       await faqCategoryService.deleteFaqCategory(
         req.params.id
       );
+
+    emitFaqCategoryDeleted(req.params.id)
 
     if (!deleted) {
       return error(

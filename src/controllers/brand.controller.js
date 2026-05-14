@@ -5,6 +5,7 @@ import { slugify } from "../utils/slugify.js";
 
 import cloudinary from "../config/cloudinary.js";
 import streamifier from "streamifier";
+import { emitBrandCreated, emitBrandDeleted, emitBrandUpdated } from "../socket/socketEvents.js";
 
 
 // GET ALL
@@ -97,6 +98,8 @@ export const createBrand = async (req, res, next) => {
       logo,
     });
 
+    emitBrandCreated(brand);
+
     return created(res, brand, "Brand created successfully");
   } catch (err) {
     next(err);
@@ -144,6 +147,8 @@ export const updateBrand = async (req, res, next) => {
 
     const updated = await brandService.updateBrand(id, updateData);
 
+    emitBrandUpdated(updated);
+
     if (!updated) {
       return error(res, "Brand not found", 404);
     }
@@ -159,6 +164,8 @@ export const updateBrand = async (req, res, next) => {
 export const deleteBrand = async (req, res, next) => {
   try {
     const deleted = await brandService.deleteBrand(req.params.id);
+
+    emitBrandDeleted(req.params.id);
 
     if (!deleted) {
       return error(res, "Brand not found", 404);
