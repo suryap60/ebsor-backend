@@ -3,6 +3,7 @@ import {
   updateProfileService,
   changePasswordService,
 } from "../services/profile.service.js";
+import { emitProfileUpdated } from "../socket/socketEvents.js";
 
 import { success, error } from "../utils/response.js";
 
@@ -26,6 +27,8 @@ export const updateProfile = async (req, res) => {
       req.user.id,
       req.body
     );
+
+    emitProfileUpdated(user);
 
     return success(res, user, "Profile updated successfully");
   } catch (err) {

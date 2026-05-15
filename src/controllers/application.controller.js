@@ -2,6 +2,7 @@ import * as applicationService from "../services/application.service.js";
 import { success, created, error } from "../utils/response.js";
 import cloudinary from "../config/cloudinary.js";
 import streamifier from "streamifier";
+import { emitApplicationCreated, emitApplicationUpdated } from "../socket/socketEvents.js";
 
 /**
  * @desc Apply for job (USER)
@@ -48,6 +49,8 @@ export const applyJob = async (req, res) => {
         ...req.body,
         resume: result.secure_url,
       });
+
+    emitApplicationCreated(application);
 
     return created(
       res,
@@ -139,6 +142,8 @@ export const updateApplicationStatus = async (req, res, next) => {
       req.params.id,
       status
     );
+
+    emitApplicationUpdated(updated);
 
     if (!updated) return error(res, "Application not found", 404);
 

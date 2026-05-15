@@ -20,13 +20,17 @@ export const initSocket = (server) => {
     // admin join
     socket.on("join-admin", () => {
       socket.join("admin-room");
-      console.log("Admin Joined");
+      console.log(
+        `Admin joined: ${socket.id}`
+      );
     });
 
     // website join
     socket.on("join-website", () => {
       socket.join("website-room");
-      console.log("Website Joined");
+      console.log(
+        `Website joined: ${socket.id}`
+      );
     });
 
     socket.on("disconnect", () => {

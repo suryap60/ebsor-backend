@@ -42,7 +42,7 @@ export const createBrand = async (data) => {
 
 export const updateBrand = async (id, data) => {
   return await Brand.findByIdAndUpdate(id, data, {
-    new: true,
+    returnDocument: "after",
   });
 };
 

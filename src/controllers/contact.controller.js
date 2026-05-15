@@ -1,4 +1,5 @@
 import * as contactService from "../services/contact.service.js";
+import { emitContactCreated, emitContactDeleted, emitContactUpdated } from "../socket/socketEvents.js";
 import { success, created, error } from "../utils/response.js";
 
 // PUBLIC: Submit Contact Form
@@ -11,6 +12,8 @@ export const submitContact = async (req, res) => {
     }
 
     const contact = await contactService.createContact(req.body);
+
+    emitContactCreated(contact);
 
     return created(res, contact, "Message submitted successfully");
   } catch (err) {
@@ -93,6 +96,8 @@ export const updateContactStatus = async (req, res) => {
 
   const updated = await contactService.updateStatus(id, status);
 
+  emitContactUpdated(updated);
+
   if (!updated) return error(res, "Message not found", 404);
 
   return success(res, updated, "Status updated");
@@ -101,6 +106,8 @@ export const updateContactStatus = async (req, res) => {
 // ADMIN: Delete Message
 export const deleteContact = async (req, res) => {
   const deleted = await contactService.deleteContact(req.params.id);
+
+  emitContactDeleted(deleted);
 
   if (!deleted) return error(res, "Message not found", 404);
 
