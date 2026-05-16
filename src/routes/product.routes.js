@@ -13,11 +13,12 @@ import isAdmin from "../middleware/admin.middleware.js";
 import { createProductValidation, updateProductValidation } from "../validators/product.validator.js";
 import { validate } from "../middleware/validate.middleware.js";
 import upload from "../middleware/upload.middleware.js";
+import authOptional from "../middleware/authOptional.middleware.js";
 
 const router = express.Router();
 
-router.get("/", getProducts);
-router.get("/slug/:slug", getProductBySlug);
+router.get("/", authOptional, getProducts);
+router.get("/slug/:slug", authOptional, getProductBySlug);
 router.get("/id/:id", getProductById);
 
 router.post("/", auth, isAdmin, upload.array("images",5), createProductValidation, validate, createProduct);

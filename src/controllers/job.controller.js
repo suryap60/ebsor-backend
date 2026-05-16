@@ -48,7 +48,22 @@ export const getJobs = async (req, res, next) => {
 
 // SINGLE JOB
 export const getJobBySlug = async (req, res) => {
-  const job = await jobService.getJobBySlug(req.params.slug);
+  const isAdmin = req.user?.role === "admin";
+
+  let job;
+
+  // ADMIN CAN ACCESS INACTIVE JOBS
+  if (isAdmin) {
+    job = await jobModel.findOne({
+      slug: req.params.slug,
+    });
+  } else {
+    // WEBSITE USERS ONLY ACTIVE JOBS
+    job = await jobModel.findOne({
+      slug: req.params.slug,
+      isActive: true,
+    });
+  }
 
   if (!job) return error(res, "Job not found", 404);
 

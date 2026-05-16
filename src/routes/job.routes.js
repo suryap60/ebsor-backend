@@ -19,8 +19,8 @@ const router = express.Router();
 
 // PUBLIC
 router.get("/", authOptional, getJobs);
-router.get("/slug/:slug", getJobBySlug);
-router.get("/id/:id", getJobById);
+router.get("/slug/:slug", authOptional, getJobBySlug);
+router.get("/id/:id", authOptional, getJobById);
 
 // ADMIN
 // router.get("/admin", auth, isAdmin, getJobs);

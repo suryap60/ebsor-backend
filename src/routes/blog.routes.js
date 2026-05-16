@@ -13,12 +13,13 @@ import auth from "../middleware/auth.middleware.js";
 import { createBlogValidation, updateBlogValidation } from "../validators/blog.validator.js";
 import { validate } from "../middleware/validate.middleware.js";
 import isAdmin from "../middleware/admin.middleware.js";
+import authOptional from "../middleware/authOptional.middleware.js";
 
 const router = express.Router();
 
 // PUBLIC
-router.get("/", getBlogs);
-router.get("/slug/:slug", getBlogBySlug);
+router.get("/", authOptional, getBlogs);
+router.get("/slug/:slug", authOptional, getBlogBySlug);
 router.get("/id/:id", getBlogById);
 
 // ADMIN
